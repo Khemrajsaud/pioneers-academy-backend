@@ -32,8 +32,8 @@ export const createNews = async (req, res) => {
 
     const dbResult = await pool.query(
       `INSERT INTO news 
-        (title, description, category, published_by, published_date, image_url, image_key)
-        VALUES ($1,$2,$3,$4,$5,$6,$7)
+        (title, description, category, published_by, published_date, image_url, image_key, view_count)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,0)
         RETURNING *`,
       [title, description, category, published_by, published_date, image_url, image_key]
     );
@@ -51,6 +51,18 @@ export const getAllNews = async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM news ORDER BY published_date DESC");
     res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching news" });
+  }
+};
+
+// GET NEWS BY ID
+export const getNewsById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT * FROM news WHERE id = $1", [id]);
+    if (!result.rows.length) return res.status(404).json({ message: "News not found" });
+    res.json(result.rows[0]);
   } catch (error) {
     res.status(500).json({ message: "Error fetching news" });
   }
@@ -122,5 +134,21 @@ export const deleteNews = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: "Error deleting news" });
+  }
+};
+
+// INCREMENT VIEW COUNT
+export const incrementViewCount = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      "UPDATE news SET view_count = view_count + 1 WHERE id = $1 RETURNING *",
+      [id]
+    );
+    if (!result.rows.length) return res.status(404).json({ message: "News not found" });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating view count" });
   }
 };

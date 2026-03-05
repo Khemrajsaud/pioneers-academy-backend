@@ -7,6 +7,7 @@ import noticeRoutes from './routes/notic.js';
 // import newsRoutes from "./routes/newsRoutes.js";
 import galleryRoutes from "./routes/gallary.js";
 import newsRoutes from "./routes/news.js";
+import resourceRoutes from "./routes/resources.js";
 
 
 
@@ -23,5 +24,6 @@ app.use("/api/notice", noticeRoutes);
 // app.use("/api/news", newsRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/news", newsRoutes);
+app.use("/api/resources", resourceRoutes);
 
 export default app;
